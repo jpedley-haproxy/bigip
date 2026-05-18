@@ -77,6 +77,9 @@ func ipport(str string) string {
 }
 
 func normalize(str string) string {
+	if len(str) == 0 {
+		return str
+	}
 	if str[0] == '/' {
 		str = str[1:]
 	}

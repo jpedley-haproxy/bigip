@@ -78,8 +78,12 @@ func Render(config *Config, f5config f5.F5Config) (err error) {
 		out = os.Stdout
 	default:
 		// file
-		out, err = os.Create(fmt.Sprintf("%s/main.cfg", config.OutputDir))
-		defer out.(*os.File).Close()
+		f, ferr := os.Create(fmt.Sprintf("%s/main.cfg", config.OutputDir))
+		if ferr != nil {
+			return ferr
+		}
+		defer f.Close()
+		out = f
 	}
 
 	tmpls, err := loadTemplates(config)
@@ -87,6 +91,7 @@ func Render(config *Config, f5config f5.F5Config) (err error) {
 		return
 	}
 
+	// TODO: remove repr dependency and this dead block (repr is only used here)
 	if false {
 		repr.Println(tmpls)
 	}

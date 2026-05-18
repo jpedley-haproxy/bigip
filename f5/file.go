@@ -242,6 +242,7 @@ func ParseFile(l *log.Log, files []string) (cfg F5Config, err error) {
 // ParseFile read and split file.
 func parseFile(l *log.Log, file string) (cfg F5Config, err error) {
 
+	// TODO: replace ioutil.ReadFile with os.ReadFile (ioutil deprecated since Go 1.16)
 	content, err := ioutil.ReadFile(file)
 	if err != nil {
 		return
@@ -301,6 +302,7 @@ func parseFile(l *log.Log, file string) (cfg F5Config, err error) {
 		len(cfg.LtmRule), len(cfg.LtmProfile),
 	)
 
+	// TODO: remove repr dependency and this dead block (repr is only used here)
 	if false {
 		repr.Println(cfg)
 	}
