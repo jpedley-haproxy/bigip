@@ -1,4 +1,4 @@
-// Copyright © 2023 Sébastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
+// Copyright © 2026 Sébastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
 //
 // Created: 2021-12-19
 // Last changed: 2024-10-29 11:46:18
@@ -130,11 +130,13 @@ func Render(config *Config, f5config f5.F5Config) (err error) {
 	f5c.LtmPersistence = f5config.LtmPersistence
 
 	err = t.Execute(out, struct {
-		F5config f5.F5Config
-		Config   Config
+		F5config   f5.F5Config
+		Config     Config
+		FullConfig f5.F5Config
 	}{
-		F5config: f5c,
-		Config:   *config,
+		F5config:   f5c,
+		Config:     *config,
+		FullConfig: f5config,
 	})
 	return
 }
@@ -184,11 +186,13 @@ func GenerateTemplates(config *Config, f5config f5.F5Config) (err error) {
 		}
 
 		err = t.Execute(fh, struct {
-			F5config f5.F5Config
-			Config   Config
+			F5config   f5.F5Config
+			Config     Config
+			FullConfig f5.F5Config
 		}{
-			F5config: f5c,
-			Config:   *config,
+			F5config:   f5c,
+			Config:     *config,
+			FullConfig: f5config,
 		})
 		if err != nil {
 			return

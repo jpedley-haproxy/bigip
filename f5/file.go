@@ -1,4 +1,4 @@
-// Copyright © 2023 Sébastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
+// Copyright © 2026 Sébastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
 //
 // Created: 2021-12-19
 // Last changed: 2024-10-09 01:27:38
@@ -66,6 +66,8 @@ type F5Config struct {
 	LtmProfile     f5config
 	LtmMonitor     f5config
 	LtmPersistence f5config
+	LtmCipherGroup f5config
+	LtmCipherRule  f5config
 }
 
 type DuplicatedConfigEntry struct {
@@ -127,6 +129,8 @@ func NewF5Config() F5Config {
 		LtmProfile:     f5config{},
 		LtmMonitor:     f5config{},
 		LtmPersistence: f5config{},
+		LtmCipherGroup: f5config{},
+		LtmCipherRule:  f5config{},
 	}
 }
 
@@ -285,6 +289,12 @@ func parseFile(l *log.Log, file string) (cfg F5Config, err error) {
 		case o.MatchPrefix("ltm persistence ", "persistence "):
 			obj, e = newLtmPersistence(o)
 			dest = cfg.LtmPersistence
+		case o.MatchPrefix("ltm cipher group "):
+			obj, e = newLtmCipherGroup(o)
+			dest = cfg.LtmCipherGroup
+		case o.MatchPrefix("ltm cipher rule "):
+			obj, e = newLtmCipherRule(o)
+			dest = cfg.LtmCipherRule
 		}
 		if e != nil {
 			l.Error("%s: %s", strings.Split(o.Content, "\n")[0], e)
