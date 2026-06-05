@@ -162,9 +162,9 @@ func f5clientSslBindOpts(content string, fullConfig f5.F5Config) string {
 		if idx := strings.LastIndex(name, "/"); idx >= 0 {
 			name = name[idx+1:]
 		}
-		parts = append(parts, "crt /etc/haproxy/certs/"+name+".pem")
+		parts = append(parts, "crt /var/lib/dataplaneapi/storage/certs/"+name+".pem")
 	} else {
-		parts = append(parts, "crt /etc/haproxy/certs/PLACEHOLDER.pem")
+		parts = append(parts, "crt /var/lib/dataplaneapi/storage/certs/PLACEHOLDER.pem")
 	}
 
 	opts := f5options(content)
@@ -212,8 +212,13 @@ func f5httpSend(send string) string {
 	if len(parts) >= 2 {
 		result += " uri " + parts[1]
 	}
+	ver := ""
 	if len(parts) >= 3 {
-		result += " ver " + parts[2]
+		ver = parts[2]
+		result += " ver " + ver
+	}
+	if ver == "HTTP/1.1" {
+		result += " hdr Host PLACEHOLDER"
 	}
 	return result
 }
