@@ -1,4 +1,4 @@
-// Copyright © 2023 Sébastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
+// Copyright © 2026 Sébastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
 //
 // Created: 2022-01-06
 // Last changed: 2024-10-09 01:24:12

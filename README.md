@@ -230,7 +230,7 @@ frontend Common::app1_t443_vs
     bind 192.168.1.21:443 ssl crt app1.pem
     bind 192.168.1.21:80
     mode http
-    http-request redirect scheme https code 302
+    http-request redirect scheme https code 301 unless { ssl_fc }
     default_backend Common::app1_t80_pool
 
 backend Common::app1_t80_pool
@@ -277,6 +277,50 @@ haproxy -c -- default.cfg generated-config.cfg
 
 ## License
 
-Copyright 2021-2024 (c) Sébastien Gross.
+Copyright 2021-2026 (c) Sébastien Gross.
 
 Released under GNU Affero General Public License. See the LICENSE file.
+
+
+## Changelog
+
+### 2026-06-05
+
+**Bug fixes**
+
+- `haproxy/templates.go`: Fixed a nil-pointer panic in `Render` when the
+  output file could not be created. The deferred `Close` was registered
+  before checking the error from `os.Create`, which would panic if the
+  directory did not exist or was not writable.
+
+- `haproxy/functions.go`: Fixed an index out-of-bounds panic in `normalize`
+  when called with an empty string.
+
+**Pending cleanup (TODO)**
+
+The following items were identified and marked with `TODO` comments in the
+source for a future cleanup pass:
+
+- `f5/file.go`: Replace deprecated `ioutil.ReadFile` with `os.ReadFile`
+  (deprecated since Go 1.16).
+- `f5/file.go`, `haproxy/templates.go`: Remove dead `if false { repr.Println(...) }`
+  debug blocks and the `github.com/alecthomas/repr` dependency they introduce.
+- `haproxy/templates/main.tpl.cfg`: Fix typo `"auto-convertion"` →
+  `"auto-conversion"`.
+- `haproxy/templates/ltm-persitence.tpl.cfg`: Rename file to
+  `ltm-persistence.tpl.cfg` (missing `s`).
+
+**Configuration updates**
+
+- `haproxy/functions.go`: Updated SSL certificate directory from
+  `/etc/haproxy/certs/` to `/var/lib/dataplaneapi/storage/certs/` for
+  compatibility with Fusion.
+
+- `haproxy/functions.go`, `haproxy/templates/ltm-monitor.tpl.cfg`: HTTP/1.1
+  monitors now include a `hdr Host` directive, as required by the HTTP/1.1
+  specification. The `f5httpSend` function automatically appends
+  `hdr Host PLACEHOLDER` when the send string specifies `HTTP/1.1`. The
+  builtin `monitor:/Common/http` and `monitor:/Common/https` templates were
+  also updated to the two-line `option httpchk` / `http-check send` format
+  with the Host header. Replace `PLACEHOLDER` with the actual hostname for
+  your service.

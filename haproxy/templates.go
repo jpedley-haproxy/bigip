@@ -1,4 +1,4 @@
-// Copyright © 2023 Sébastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
+// Copyright © 2026 Sébastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
 //
 // Created: 2021-12-19
 // Last changed: 2024-10-29 11:46:18
@@ -78,8 +78,12 @@ func Render(config *Config, f5config f5.F5Config) (err error) {
 		out = os.Stdout
 	default:
 		// file
-		out, err = os.Create(fmt.Sprintf("%s/main.cfg", config.OutputDir))
-		defer out.(*os.File).Close()
+		f, ferr := os.Create(fmt.Sprintf("%s/main.cfg", config.OutputDir))
+		if ferr != nil {
+			return ferr
+		}
+		defer f.Close()
+		out = f
 	}
 
 	tmpls, err := loadTemplates(config)
@@ -87,6 +91,7 @@ func Render(config *Config, f5config f5.F5Config) (err error) {
 		return
 	}
 
+	// TODO: remove repr dependency and this dead block (repr is only used here)
 	if false {
 		repr.Println(tmpls)
 	}
@@ -125,11 +130,13 @@ func Render(config *Config, f5config f5.F5Config) (err error) {
 	f5c.LtmPersistence = f5config.LtmPersistence
 
 	err = t.Execute(out, struct {
-		F5config f5.F5Config
-		Config   Config
+		F5config   f5.F5Config
+		Config     Config
+		FullConfig f5.F5Config
 	}{
-		F5config: f5c,
-		Config:   *config,
+		F5config:   f5c,
+		Config:     *config,
+		FullConfig: f5config,
 	})
 	return
 }
@@ -179,11 +186,13 @@ func GenerateTemplates(config *Config, f5config f5.F5Config) (err error) {
 		}
 
 		err = t.Execute(fh, struct {
-			F5config f5.F5Config
-			Config   Config
+			F5config   f5.F5Config
+			Config     Config
+			FullConfig f5.F5Config
 		}{
-			F5config: f5c,
-			Config:   *config,
+			F5config:   f5c,
+			Config:     *config,
+			FullConfig: f5config,
 		})
 		if err != nil {
 			return
