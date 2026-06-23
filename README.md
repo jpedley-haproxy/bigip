@@ -230,7 +230,7 @@ frontend Common::app1_t443_vs
     bind 192.168.1.21:443 ssl crt app1.pem
     bind 192.168.1.21:80
     mode http
-    http-request redirect scheme https code 302
+    http-request redirect scheme https code 301 unless { ssl_fc }
     default_backend Common::app1_t80_pool
 
 backend Common::app1_t80_pool
